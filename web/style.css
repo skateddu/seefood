@@ -1,0 +1,384 @@
+:root {
+  --mustard: #f3c11b;
+  --sausage: #3a1a12;
+  --bun: #fbe7b8;
+  --relish: #1e9e3e;
+  --ketchup: #d62718;
+  --white: #ffffff;
+
+  --page: var(--mustard);
+  --ink: var(--sausage);
+  --frame: var(--sausage);
+  --screen: var(--bun);
+  --muted: color-mix(in srgb, var(--sausage) 72%, var(--mustard));
+
+  --font: "Bricolage Grotesque", system-ui, sans-serif;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --page: #24110b;
+    --ink: var(--bun);
+    --frame: var(--mustard);
+    --screen: #3a1a12;
+    --muted: color-mix(in srgb, var(--bun) 70%, #24110b);
+    color-scheme: dark;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Component display rules (grid, block) must not override the hidden attribute. */
+[hidden] {
+  display: none !important;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  background: var(--page);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 1.0625rem;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+.app {
+  width: min(100% - 32px, 440px);
+  margin-inline: auto;
+  padding-block: 32px 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Masthead: the wordmark is set like a hot dog stand sign. */
+.masthead {
+  text-align: center;
+}
+
+.wordmark {
+  margin: 0;
+  font-size: clamp(3.5rem, 17vw, 5rem);
+  font-weight: 800;
+  font-stretch: 75%;
+  font-variation-settings: "opsz" 96;
+  line-height: 0.9;
+  letter-spacing: -0.02em;
+}
+
+.tagline {
+  margin: 8px 0 0;
+  color: var(--muted);
+}
+
+/* Viewfinder: the phone screen that holds the photo and the verdict. */
+.viewfinder {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  border: 6px solid var(--frame);
+  border-radius: 32px;
+  background: var(--screen);
+  overflow: clip;
+  overflow-clip-margin: 48px;
+  transition: outline-offset 150ms ease;
+}
+
+.viewfinder.is-dragging {
+  outline: 4px dashed var(--frame);
+  outline-offset: 6px;
+}
+
+.photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 26px;
+}
+
+.camera {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 26px;
+  background: var(--sausage);
+}
+
+/* Shutter: a camera-app release button where the verdict badge will land. */
+.shutter {
+  position: absolute;
+  left: 50%;
+  bottom: 24px;
+  width: 76px;
+  height: 76px;
+  translate: -50% 0;
+  padding: 0;
+  border: 5px solid var(--white);
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+}
+
+.shutter::after {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  border-radius: 50%;
+  background: var(--white);
+  transition: scale 100ms ease;
+}
+
+.shutter:active::after {
+  scale: 0.88;
+}
+
+.shutter:focus-visible {
+  outline: 3px solid var(--mustard);
+  outline-offset: 3px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.viewfinder[data-state="evaluating"] .photo {
+  filter: saturate(0.4) brightness(0.85);
+}
+
+.placeholder {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  padding: 32px;
+  text-align: center;
+  font-size: 1.375rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+/* The verdict banner drops in from the top, like the app in the show. */
+.banner {
+  position: absolute;
+  inset: 0 0 auto;
+  padding: 28px 20px 24px;
+  border-radius: 26px 26px 0 0;
+  color: var(--white);
+  text-align: center;
+  animation: drop 520ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.viewfinder[data-verdict="hotdog"] .banner {
+  background: var(--relish);
+}
+
+.viewfinder[data-verdict="not-hotdog"] .banner {
+  background: var(--ketchup);
+}
+
+.verdict {
+  margin: 0;
+  font-size: clamp(2.5rem, 12vw, 3.5rem);
+  font-weight: 800;
+  font-stretch: 75%;
+  line-height: 1;
+  text-shadow: 0 2px 0 rgb(0 0 0 / 0.18);
+}
+
+.badge {
+  position: absolute;
+  left: 50%;
+  bottom: 24px;
+  width: 88px;
+  height: 88px;
+  translate: -50% 0;
+  display: grid;
+  place-items: center;
+  border: 5px solid var(--white);
+  border-radius: 50%;
+  animation: pop 420ms 260ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.viewfinder[data-verdict="hotdog"] .badge {
+  background: var(--relish);
+}
+
+.viewfinder[data-verdict="not-hotdog"] .badge {
+  background: var(--ketchup);
+}
+
+.badge-icon {
+  grid-area: 1 / 1;
+  width: 48px;
+  height: 48px;
+  fill: none;
+  stroke: var(--white);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.viewfinder[data-verdict="hotdog"] .badge-no,
+.viewfinder[data-verdict="not-hotdog"] .badge-yes {
+  display: none;
+}
+
+@keyframes drop {
+  from {
+    translate: 0 -100%;
+  }
+}
+
+@keyframes pop {
+  from {
+    scale: 0;
+  }
+}
+
+.probability {
+  margin: -8px 0 0;
+  text-align: center;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Controls */
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.choose {
+  display: block;
+  padding: 16px 24px;
+  border-radius: 999px;
+  background: var(--frame);
+  color: var(--page);
+  font-size: 1.25rem;
+  font-weight: 700;
+  text-align: center;
+  cursor: pointer;
+  transition: scale 120ms ease;
+}
+
+.choose:active,
+.camera-toggle:active {
+  scale: 0.98;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.actions > .choose,
+.actions > .camera-toggle {
+  flex: 1 1 0;
+  white-space: nowrap;
+}
+
+.camera-toggle {
+  padding: 13px 20px;
+  border: 3px solid var(--frame);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: 1.25rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: scale 120ms ease;
+}
+
+.camera-toggle:focus-visible {
+  outline: 3px solid var(--ink);
+  outline-offset: 4px;
+}
+
+.file-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.choose:has(+ .file-input:focus-visible) {
+  outline: 3px solid var(--ink);
+  outline-offset: 4px;
+}
+
+.status {
+  margin: 0;
+  text-align: center;
+}
+
+.progress {
+  width: 100%;
+  height: 6px;
+  appearance: none;
+  border: none;
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--ink) 18%, transparent);
+  overflow: hidden;
+}
+
+.progress::-webkit-progress-bar {
+  background: transparent;
+}
+
+.progress::-webkit-progress-value {
+  background: var(--ink);
+}
+
+.progress::-moz-progress-bar {
+  background: var(--ink);
+}
+
+.progress[hidden] {
+  display: none;
+}
+
+.footer {
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+
+.footer p {
+  margin: 0 0 8px;
+}
+
+.footer a {
+  color: var(--ink);
+  text-underline-offset: 3px;
+}
+
+a:focus-visible {
+  outline: 3px solid var(--ink);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .banner,
+  .badge {
+    animation: none;
+  }
+}

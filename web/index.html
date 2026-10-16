@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SeeFood</title>
+    <meta name="description" content="Tells you if you have a hotdog. Or not a hotdog." />
+    <meta name="theme-color" content="#F3C11B" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#24110B" media="(prefers-color-scheme: dark)" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌭</text></svg>"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&display=swap"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <script
+      type="module"
+      src="app.js"
+      onerror="location.protocol === 'file:' || (document.getElementById('status').textContent = 'SeeFood couldn\'t start. Check your connection and reload the page.')"
+    ></script>
+  </head>
+  <body>
+    <main class="app">
+      <header class="masthead">
+        <h1 class="wordmark">SeeFood</h1>
+        <p class="tagline">Tells you if you have a hotdog. Or not a hotdog.</p>
+      </header>
+
+      <section class="viewfinder" id="viewfinder" data-state="empty" aria-label="Your photo">
+        <img class="photo" id="photo" alt="" hidden />
+        <video class="camera" id="camera" muted playsinline hidden></video>
+        <p class="placeholder" id="placeholder">Drop a photo of your food here</p>
+        <button class="shutter" id="shutter" type="button" hidden>
+          <span class="visually-hidden">Take photo</span>
+        </button>
+        <div class="banner" id="banner" hidden>
+          <p class="verdict" id="verdict" role="status" aria-live="polite"></p>
+        </div>
+        <div class="badge" id="badge" hidden aria-hidden="true">
+          <svg class="badge-icon badge-yes" viewBox="0 0 24 24">
+            <path d="M5 12.5l4.5 4.5L19 7.5" />
+          </svg>
+          <svg class="badge-icon badge-no" viewBox="0 0 24 24">
+            <path d="M6.5 6.5l11 11M17.5 6.5l-11 11" />
+          </svg>
+        </div>
+      </section>
+
+      <p class="probability" id="probability" hidden></p>
+
+      <div class="controls">
+        <div class="actions">
+          <label class="choose" for="file-input">Choose a photo</label>
+          <input class="file-input" id="file-input" type="file" accept="image/*" />
+          <button class="camera-toggle" id="camera-toggle" type="button" hidden>
+            Use camera
+          </button>
+        </div>
+        <p class="status" id="status" aria-live="polite">Downloading the model…</p>
+        <progress class="progress" id="progress" max="1" value="0"></progress>
+      </div>
+
+      <footer class="footer">
+        <p>
+          The model runs in your browser: your photo never leaves this device.
+          You can also paste an image or drop one anywhere on the page.
+        </p>
+        <p>
+          A fan project inspired by <cite>Silicon Valley</cite>, not affiliated with HBO.
+          <a href="https://github.com/skateddu/seefood">Source on GitHub</a>
+        </p>
+      </footer>
+    </main>
+    <script>
+      // Browsers refuse to load JavaScript modules from file:// pages, so app.js never runs.
+      if (location.protocol === "file:") {
+        document.getElementById("progress").hidden = true;
+        document.getElementById("status").textContent =
+          "This page needs a web server. Run uv run python scripts/build_site.py --serve " +
+          "and open http://127.0.0.1:8000.";
+      }
+    </script>
+  </body>
+</html>

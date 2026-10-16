@@ -1,0 +1,69 @@
+[project]
+name = "seefood"
+version = "1.0.0"
+description = "SeeFood: the revolutionary app that tells you if something is a hotdog. Or not a hotdog."
+readme = "README.md"
+license = "MIT"
+authors = [{ name = "Andrea Cadeddu" }]
+requires-python = ">=3.10"
+dependencies = [
+    "numpy>=1.26",
+    "onnxruntime>=1.20",
+    "pillow>=10.0",
+]
+
+[project.urls]
+Homepage = "https://skateddu.github.io/seefood/"
+Repository = "https://github.com/skateddu/seefood"
+Changelog = "https://github.com/skateddu/seefood/blob/main/CHANGELOG.md"
+
+[project.scripts]
+seefood = "seefood.main:main"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "pytest-cov>=5.0",
+    "ruff>=0.8",
+]
+export = [
+    "onnx>=1.16",
+    "onnxscript>=0.5",
+    "torch>=2.9",
+    "torchvision>=0.24",
+]
+
+[tool.uv]
+default-groups = ["dev"]
+
+[build-system]
+requires = ["uv_build>=0.9,<0.13"]
+build-backend = "uv_build"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+extend-exclude = [".claude", "data"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "B", "SIM", "RUF", "D"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["D"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "integration: marks tests requiring the real ONNX model",
+]
+addopts = "-v --strict-markers -m 'not integration'"
+
+[tool.coverage.run]
+source = ["seefood"]
+
+[tool.coverage.report]
+fail_under = 80
+show_missing = true
